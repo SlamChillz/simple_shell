@@ -44,5 +44,17 @@ void signal_handr(int signum)
  */
 void print(char *s)
 {
+	write(STDERR_FILENO, s, _strlen(s));
+}
+
+/**
+ * _printf - print a string to standard error
+ * @s: pointer to a string
+ *
+ * Return: void
+ */
+void _printf(char *s)
+{
 	write(STDOUT_FILENO, s, _strlen(s));
 }
+

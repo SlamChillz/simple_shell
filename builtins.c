@@ -45,7 +45,8 @@ void _xit(char *in, char **argv, char **tokens, int n)
 /**
  * env - display environmental variables
  * @tokens: pointer to an array of strings
- * @stat: status number
+ * @stat: exit status
+ *
  * Return: status code
  */
 int env(char **tokens, int *stat)
@@ -56,14 +57,14 @@ int env(char **tokens, int *stat)
 	if (tokens[1])
 	{
 		print("env: '"), print(tokens[1]);
-		print("’: No such file or directory\n");
+		print("’: No such file or directory");
 		return (127);
 	}
 
 	for (i = 0; environ[i]; i++)
 	{
-		print(environ[i]);
-		print("\n");
+		_printf(environ[i]);
+		_printf("\n");
 	}
 	return (0);
 }
@@ -71,7 +72,8 @@ int env(char **tokens, int *stat)
 /**
  * _setenv - Initialize a new environment variable, or modify an existing one
  * @tokens: array of strings
- * @stat: status number
+ * @stat: exit status
+ *
  * Return: integer
  */
 int _setenv(char **tokens, int *stat)
@@ -117,7 +119,8 @@ int _setenv(char **tokens, int *stat)
 /**
  * _unsetenv - unset environmental variables
  * @tokens: pointer to an array of strings
- * @stat: status number
+ * @stat: exit status
+ *
  * Return: integer
  */
 int _unsetenv(char **tokens, int *stat)
@@ -186,3 +189,4 @@ char *_getenv(char *var)
 	}
 	return (NULL);
 }
+

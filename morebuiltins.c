@@ -3,7 +3,8 @@
 /**
  * _chdir - change current work directory
  * @tokens: array of strings
- * @stat: program status
+ * @stat: status
+ *
  * Return: integer, execution status
  */
 int _chdir(char **tokens, int *stat)
@@ -49,7 +50,8 @@ int _chdir(char **tokens, int *stat)
 /**
  * _echo - to handle special echo cases
  * @token: array of parsed strings
- * @status: program status
+ * @status: status
+ *
  * Return: integer value, exit status
  */
 int _echo(char **token, int *status)
@@ -58,7 +60,7 @@ int _echo(char **token, int *status)
 	pid_t pid = getppid();
 
 	if (token[1] == NULL)
-		return (0);
+		return (1);
 	if (_strncmp(token[1], "$?", 2) == 0)
 	{
 		if (*status == 0)
@@ -68,15 +70,15 @@ int _echo(char **token, int *status)
 		else
 		{
 			e = _itoa(*status);
-			print(e), free(e);
+			_printf(e), free(e);
 		}
-		print("\n");
+		_printf("\n");
 		return (0);
 	}
 	else if (_strncmp(token[1], "$$", 2) == 0)
 	{
 		e = _itoa(pid);
-		print(e), print("\n"), free(e);
+		_printf(e), _printf("\n"), free(e);
 		return (0);
 	}
 	else if (token[1][0] == '$')
@@ -84,8 +86,8 @@ int _echo(char **token, int *status)
 		e = token[1];
 		path = _getenv(++e);
 		if (path == NULL)
-			return (0);
-		print(path), print("\n");
+			return (1);
+		_printf(path), _printf("\n");
 		return (0);
 	}
 	return (1);
@@ -106,3 +108,4 @@ int echocheck(char *str)
 
 	return (_strcmp(str, "echo"));
 }
+

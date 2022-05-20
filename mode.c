@@ -25,36 +25,6 @@ char *rem_(char *str)
 		str++;
 	return (str);
 }
-
-/**
- * nonint - Non-interactive mode
- *
- * @argv: argument variables
- */
-void nonint(char **argv)
-{
-	char *input, *t_input, **tokens;
-	int status, loop = 1;
-
-	t_input = readline();
-	if (!t_input)
-		exit(0);
-	input = rem_spe(t_input);
-	if (input[0] == '\0')
-	{
-		free(t_input);
-		exit(0);
-	}
-	tokens = tokenise(input);
-
-	if (_strcmp(tokens[0], "exit") == 0)
-		_xit(input, argv, tokens, loop);
-	else
-		status = execute(tokens, loop);
-	free(t_input), freearray(tokens);
-	exit(status);
-}
-
 /**
  * int_mode - Interactive mode
  *
@@ -62,23 +32,29 @@ void nonint(char **argv)
  */
 void int_mode(char **argv)
 {
-	char *input, *t_input, **tokens;
-	int status, loop = 0;
+	char *t_input = NULL, *input = NULL, **tokens;
+	int status, loop = 0, read;
+	size_t bufflen = 0;
 
 	while (1)
 	{
 		loop++;
 		if (isatty(STDIN_FILENO))
 			prompt();
-		else
-			nonint(argv);
-		t_input = readline();
+		read = _getline(&t_input, &bufflen, stdin);
+		if (read == EOF)
+		{
+			free(t_input);
+			exit(0);
+		}
 		if (!t_input)
+		{
+			free(t_input);
 			break;
+		}
 		input = rem_(t_input);
 		if (input[0] == '\0' || _strcmp(input, "\n") == 0)
 		{
-			free(t_input);
 			continue;
 		}
 		tokens = tokenise(input);
@@ -87,7 +63,7 @@ void int_mode(char **argv)
 			_xit(input, argv, tokens, loop);
 		else
 			status = execute(tokens, loop);
-		free(t_input), freearray(tokens);
+		freearray(tokens);
 		continue;
 	}
 	exit(status);
@@ -104,7 +80,7 @@ int batch_mode(char *filename)
 	FILE *fptr;
 	int status, loop = 0;
 	char line[1024];
-	char **args;
+	char *input = NULL, *t_input = NULL, **args;
 
 	fptr = fopen(filename, "r");
 	if (fptr == NULL)
@@ -117,7 +93,14 @@ int batch_mode(char *filename)
 		while (fgets(line, sizeof(line), fptr) != NULL)
 		{
 			loop++;
-			args = tokenise(line);
+			t_input = line;
+			input = rem_(t_input);
+			if (input[0] == '\0' || _strcmp(input, "\n") == 0)
+			{
+				free(t_input);
+				continue;
+			}
+			args = tokenise(input);
 			status = execute(args, loop);
 			freearray(args);
 		}
@@ -125,3 +108,4 @@ int batch_mode(char *filename)
 	fclose(fptr);
 	return (status);
 }
+
